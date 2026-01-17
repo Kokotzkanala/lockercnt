@@ -3,92 +3,548 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Content Locker</title>
+    <title>Free Content Packs - MEGA Style</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #000;
+            background-image: linear-gradient(to bottom, #000, #200000);
             margin: 0;
+            padding: 0;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        header {
+            background-color: rgba(17, 17, 17, 0.9);
+            border-bottom: 1px solid #333;
             padding: 20px;
             text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(10px);
         }
-        h1 {
-            color: #333;
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #fff;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        .logo {
+            color: #ff0000; /* MEGA red */
+            font-weight: bold;
+        }
+        .warning {
+            text-align: center;
+            padding: 10px;
+            background-color: #ff0000;
+            color: #fff;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        .info {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: rgba(17, 17, 17, 0.8);
+            border-bottom: 1px solid #333;
+            box-shadow: 0 4px 8px rgba(255,0,0,0.2);
+        }
+        .info p {
+            font-size: 1.2em;
+            margin: 10px 0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
             padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .pack-card {
+            background-color: #222;
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5), 0 0 15px rgba(255,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .pack-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.7), 0 0 25px rgba(255,0,0,0.5);
+        }
+        .pack-card h2 {
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            color: #ff0000;
+            text-shadow: 0 0 5px #ff0000;
+        }
+        .pack-card p {
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+        .pack-card .details {
+            font-size: 0.9em;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            background-color: #ff0000; /* MEGA red */
+            color: white;
+            text-decoration: none;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .download-btn:hover {
+            background-color: #cc0000;
+            transform: scale(1.05);
+        }
+        .mega-logo {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            background-color: white; /* Placeholder for MEGA logo */
+            border-radius: 50%;
+            display: inline-block;
+        }
+        /* Placeholder for actual logo; replace with img src if available */
+        .mega-logo::before {
+            content: 'M';
+            color: #ff0000;
+            font-weight: bold;
+            line-height: 24px;
+        }
+        .locker-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            transition: opacity 0.3s ease;
+        }
+        .locker-content {
+            background-color: #222;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            height: 80%;
+            position: relative;
+            box-shadow: 0 0 20px rgba(255,0,0,0.5);
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 2em;
+            color: #fff;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .close-btn:hover {
+            color: #ff0000;
         }
         iframe {
             width: 100%;
-            height: 600px;
+            height: 100%;
             border: none;
-            margin-top: 20px;
+            border-radius: 12px;
         }
         .instructions {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #e9f7ff;
-            border: 1px solid #b3d4fc;
-            border-radius: 5px;
+            margin: 40px auto;
+            max-width: 800px;
+            padding: 20px;
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 12px;
             text-align: left;
+            color: #ccc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+        }
+        .instructions h3 {
+            color: #fff;
+            font-size: 1.4em;
         }
         .instructions ul {
             list-style-type: disc;
             padding-left: 20px;
         }
-        .fallback {
-            margin-top: 20px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
         .contact {
-            margin-top: 20px;
+            text-align: center;
+            margin-top: 40px;
+            font-size: 1em;
+            color: #ccc;
+            padding-bottom: 40px;
+        }
+        footer {
+            background-color: #111;
+            padding: 15px;
+            text-align: center;
             font-size: 0.9em;
-            color: #666;
+            color: #999;
+            border-top: 1px solid #333;
+        }
+
+        /* Enhanced Responsive adjustments */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            .info p {
+                font-size: 1.1em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+            .container {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+            .pack-card {
+                padding: 20px;
+            }
+            .info {
+                padding: 30px 15px;
+            }
+            .info p {
+                font-size: 1em;
+            }
+            .locker-content {
+                width: 95%;
+                height: 85%;
+            }
+            .download-btn {
+                padding: 10px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            .pack-card h2 {
+                font-size: 1.4em;
+            }
+            .download-btn {
+                padding: 8px 16px;
+                font-size: 0.9em;
+            }
+            .instructions {
+                padding: 15px;
+            }
+            .warning {
+                font-size: 0.9em;
+                padding: 8px;
+            }
         }
     </style>
 </head>
 <body>
+    <header>
+        <h1 class="logo">Free Content Packs</h1>
+    </header>
+    
+    <div class="warning">
+        <p>This is the official Free Content Packs website at https://freecontentmegapacks.linkpc.net. All others are fake and may contain malware.</p>
+    </div>
+    
+    <div class="info">
+        <p>Discover our collection of free 20GB (18+) porn packs hosted on MEGA.</p>
+        <p>All packs are up to date and updated daily for the latest content. Complete the content locker to unlock each pack's download link.</p>
+        <p>High-speed downloads, virus-free, and exclusive content available only here.</p>
+    </div>
+    
     <div class="container">
-        <h1>Free 20GB Pack [MEGA]</h1>
-        <p>Unlock the download link by completing a quick survey below. This is not a popup ad or any intrusive advertisement—simply complete one of the available surveys or offers to gain access to the pack.</p>
-        
-        <div class="instructions">
-            <h3>Important Notes:</h3>
-            <ul>
-                <li>This is a legitimate content locker requiring you to complete surveys or offers to unlock the link. No popups or ads will interrupt your experience outside of the locker itself.</li>
-                <li>Choose a survey that suits you and follow the instructions to verify completion.</li>
-                <li>Once done, the 20GB pack link will be revealed for download.</li>
-            </ul>
+        <!-- Pack 1 -->
+        <div class="pack-card">
+            <h2>Teen Leaks Pack 1 (18+)</h2>
+            <p>20GB of exclusive teen-style content.</p>
+            <p class="details">Size: 20GB | Files: 500+ | Last Updated: January 17, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
         </div>
         
-        <!-- Embed the content locker via iframe -->
-        <iframe src="https://ridefiles.net/1856183" title="Content Locker"></iframe>
-        
-        <!-- Fallback link if iframe doesn't work -->
-        <div class="fallback">
-            <p>If the locker doesn't load above, click here:</p>
-            <a href="https://ridefiles.net/1856183" class="btn" target="_blank">Access Locker</a>
+        <!-- Pack 2 -->
+        <div class="pack-card">
+            <h2>Teen Leaks Pack 2 (18+)</h2>
+            <p>20GB of premium amateur teen-inspired videos and images.</p>
+            <p class="details">Size: 20GB | Files: 600+ | Last Updated: January 16, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
         </div>
         
-        <div class="contact">
-            <p>For any issues or questions, contact @osahavac on Telegram.</p>
+        <!-- Pack 3 -->
+        <div class="pack-card">
+            <h2>Teen Leaks Pack 3 (18+)</h2>
+            <p>20GB of high-quality leaks.</p>
+            <p class="details">Size: 20GB | Files: 450+ | Last Updated: January 15, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 4 -->
+        <div class="pack-card">
+            <h2>Amateur Teen Pack (18+)</h2>
+            <p>20GB of user-submitted content.</p>
+            <p class="details">Size: 20GB | Files: 700+ | Last Updated: January 14, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 5 -->
+        <div class="pack-card">
+            <h2>College Teen Pack (18+)</h2>
+            <p>20GB of campus-themed content.</p>
+            <p class="details">Size: 20GB | Files: 550+ | Last Updated: January 13, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 6 -->
+        <div class="pack-card">
+            <h2>Petite Teen Pack (18+)</h2>
+            <p>20GB of petite model media.</p>
+            <p class="details">Size: 20GB | Files: 650+ | Last Updated: January 12, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 7 -->
+        <div class="pack-card">
+            <h2>Blonde Teen Pack (18+)</h2>
+            <p>20GB of blonde-themed packs.</p>
+            <p class="details">Size: 20GB | Files: 500+ | Last Updated: January 11, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 8 -->
+        <div class="pack-card">
+            <h2>Brunette Teen Pack (18+)</h2>
+            <p>20GB of brunette content.</p>
+            <p class="details">Size: 20GB | Files: 600+ | Last Updated: January 10, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 9 -->
+        <div class="pack-card">
+            <h2>Asian Teen Pack (18+)</h2>
+            <p>20GB of Asian-inspired content.</p>
+            <p class="details">Size: 20GB | Files: 550+ | Last Updated: January 9, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 10 -->
+        <div class="pack-card">
+            <h2>Latin Teen Pack (18+)</h2>
+            <p>20GB of Latin leaks.</p>
+            <p class="details">Size: 20GB | Files: 700+ | Last Updated: January 8, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 11 -->
+        <div class="pack-card">
+            <h2>Ebony Teen Pack (18+)</h2>
+            <p>20GB of ebony-themed content.</p>
+            <p class="details">Size: 20GB | Files: 500+ | Last Updated: January 7, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 12 -->
+        <div class="pack-card">
+            <h2>Redhead Teen Pack (18+)</h2>
+            <p>20GB of redhead packs.</p>
+            <p class="details">Size: 20GB | Files: 600+ | Last Updated: January 6, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 13 -->
+        <div class="pack-card">
+            <h2>Solo Teen Pack (18+)</h2>
+            <p>20GB of solo performance content.</p>
+            <p class="details">Size: 20GB | Files: 650+ | Last Updated: January 5, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 14 -->
+        <div class="pack-card">
+            <h2>Lesbian Teen Pack (18+)</h2>
+            <p>20GB of lesbian content.</p>
+            <p class="details">Size: 20GB | Files: 550+ | Last Updated: January 4, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 15 -->
+        <div class="pack-card">
+            <h2>Group Teen Pack (18+)</h2>
+            <p>20GB of group scene packs.</p>
+            <p class="details">Size: 20GB | Files: 700+ | Last Updated: January 3, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 16 -->
+        <div class="pack-card">
+            <h2>Fetish Teen Pack (18+)</h2>
+            <p>20GB of fetish-themed media.</p>
+            <p class="details">Size: 20GB | Files: 500+ | Last Updated: January 2, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 17 -->
+        <div class="pack-card">
+            <h2>Roleplay Teen Pack (18+)</h2>
+            <p>20GB of roleplay content.</p>
+            <p class="details">Size: 20GB | Files: 600+ | Last Updated: January 1, 2026</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 18 -->
+        <div class="pack-card">
+            <h2>Outdoor Teen Pack (18+)</h2>
+            <p>20GB of outdoor content.</p>
+            <p class="details">Size: 20GB | Files: 550+ | Last Updated: December 31, 2025</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 19 -->
+        <div class="pack-card">
+            <h2>POV Teen Pack (18+)</h2>
+            <p>20GB of POV-style packs.</p>
+            <p class="details">Size: 20GB | Files: 650+ | Last Updated: December 30, 2025</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 20 -->
+        <div class="pack-card">
+            <h2>Hardcore Teen Pack (18+)</h2>
+            <p>20GB of hardcore leaks.</p>
+            <p class="details">Size: 20GB | Files: 700+ | Last Updated: December 29, 2025</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 21 -->
+        <div class="pack-card">
+            <h2>Softcore Teen Pack (18+)</h2>
+            <p>20GB of softcore content.</p>
+            <p class="details">Size: 20GB | Files: 500+ | Last Updated: December 28, 2025</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 22 -->
+        <div class="pack-card">
+            <h2>Vintage Teen Pack (18+)</h2>
+            <p>20GB of vintage-style content.</p>
+            <p class="details">Size: 20GB | Files: 600+ | Last Updated: December 27, 2025</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
+        </div>
+        
+        <!-- Pack 23 -->
+        <div class="pack-card">
+            <h2>Mixed Teen Leaks Pack (18+)</h2>
+            <p>20GB of mixed leaks and content.</p>
+            <p class="details">Size: 20GB | Files: 750+ | Last Updated: December 26, 2025</p>
+            <a href="#" class="download-btn" onclick="showLocker(); return false;">
+                <span class="mega-logo"></span> Download
+            </a>
         </div>
     </div>
+    
+    <div class="instructions">
+        <h3>Important Notes:</h3>
+        <ul>
+            <li>This is a legitimate content locker requiring you to complete surveys or offers to unlock each pack's link. No popups or ads will interrupt your experience outside of the locker itself.</li>
+            <li>Choose a survey that suits you and follow the instructions to verify completion.</li>
+            <li>Once done, the selected 20GB pack link will be revealed for download.</li>
+            <li>Downloads are encrypted and secure via MEGA.nz.</li>
+        </ul>
+    </div>
+    
+    <div class="locker-modal" id="lockerModal" onclick="hideLocker()">
+        <div class="locker-content" onclick="event.stopPropagation()">
+            <span class="close-btn" onclick="hideLocker()">&times;</span>
+            <iframe src="https://ridefiles.net/1856183" title="Content Locker"></iframe>
+        </div>
+    </div>
+    
+    <div class="contact">
+        <p>For any issues or questions, contact @osahavac on Telegram.</p>
+    </div>
+    
+    <footer>
+        <p>&copy; 2026 Free Content Packs. All rights reserved. 18+ only. Official site: https://freecontentmegapacks.linkpc.net</p>
+    </footer>
+    
+    <script>
+        function showLocker() {
+            const modal = document.getElementById('lockerModal');
+            modal.style.display = 'flex';
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.opacity = '1'; }, 10);
+        }
+        function hideLocker() {
+            const modal = document.getElementById('lockerModal');
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+    </script>
 </body>
 </html>
