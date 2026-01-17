@@ -149,6 +149,7 @@
             height: 80%;
             position: relative;
             box-shadow: 0 0 20px rgba(255,0,0,0.5);
+            overflow: hidden; /* Prevent content overflow */
         }
         .close-btn {
             position: absolute;
@@ -212,6 +213,10 @@
             .info p {
                 font-size: 1.1em;
             }
+            .locker-content {
+                width: 95%;
+                height: 85%;
+            }
         }
 
         @media (max-width: 768px) {
@@ -232,8 +237,13 @@
                 font-size: 1em;
             }
             .locker-content {
-                width: 95%;
-                height: 85%;
+                width: 100%;
+                height: 95%;
+                max-width: none;
+                border-radius: 0;
+            }
+            iframe {
+                border-radius: 0;
             }
             .download-btn {
                 padding: 10px 20px;
@@ -257,6 +267,9 @@
             .warning {
                 font-size: 0.9em;
                 padding: 8px;
+            }
+            .locker-content {
+                height: 100%;
             }
         }
     </style>
